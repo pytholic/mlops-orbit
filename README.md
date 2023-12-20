@@ -1,4 +1,6 @@
-# Setting up a VM on GCP
+# MLOps Pipeline
+![Alt text](assets/mlops.png)
+
 # Setting up a VM on GCP
 
 ## **Step 1: Login to GCP console and create project**
@@ -124,7 +126,7 @@ docker run hello-world
 - In VS Code
     - Go to `ports` tab and forward `8888`
 
-![port forwarding image](./assets/image.png)
+![port forwarding image](./assets/port1.png)
 
 - Go to `localhost:8888`
 - Copy `token` from terminal and set a new password
@@ -159,3 +161,56 @@ pip install pyarrow
 import pandas as pd
 df = pd.read_parquet("./data/green_tripdata_2022-01.parquet")
 ```
+
+# 02 - Experiment Tracking
+
+We will use **MLflow** for it.
+
+## Why tracking?
+
+Mainly for three main reasons:
+
+- Reproducibility
+- Organization
+- Optimization
+
+## Install requirements
+
+Create environment
+
+```
+conda create -n exp-tracking python=3.9
+```
+
+Create `requirements.txt`
+
+```
+mlflow
+jupyter
+scikit-learn
+pandas
+seaborn
+hyperopt
+xgboost
+```
+
+Install requirements
+```
+pip install -r requirements.txt
+```
+
+Forward MLflow port which is `5000`.
+![Alt text](assets/port2.png)
+
+```
+mlflow ui --backend-store-uri sqlite:///mlflow.db
+```
+
+## Experiments
+
+- First we train a simple Linear Regression model.
+- Then we train `xgboost` model with hyperparameter optimization using `hyperopt`.
+    - Run and compare different models
+    - Pick the one with lowest `rmse`
+
+![Alt text](assets/experiments.png)
