@@ -6,7 +6,8 @@ We will be training simple regression models on NYC taxi ride dataset and build 
 # Notes
 [Setting up a VM on GCP](notes/gcp_setup.md)<br>
 [Dataset](notes/dataset.md)<br>
-[MLFlow Experiment Tracking](notes/mlflow.md)
+[MLFlow Experiment Tracking](notes/mlflow.md)<br>
+[MLFlow Experiment Tracking on GCP](notes/mlflow_gcp.md)
 
 # Setup
 
