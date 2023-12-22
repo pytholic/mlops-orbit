@@ -1,178 +1,14 @@
 # MLOps Pipeline
-![Alt text](assets/mlops.png)
+![Machine Learning Lifecycle](assets/mlops.png)
 
-# Setting up a VM on GCP
+We will be training simple regression models on NYC taxi ride dataset and build MLOps pipeline including model training, hyperparameter optimization, experiment tracking, orchestrating, deployment, monitoring, etc. This repository is based on the MLOps course by DataTalks.Club.
 
-## **Step 1: Login to GCP console and create project**
+# Notes
+[Setting up a VM on GCP](notes/gcp_setup.md)<br>
+[Dataset](notes/dataset.md)<br>
+[MLFlow Experiment Tracking](notes/mlflow.md)
 
-Name: `mlops-demo`
-
-## **Step 2:** **Create an instance using Compute Engine**
-
-```
-Configuration:
-
-Name: mlops-zoomcamp
-Region: asia-northeast3 (Seoul)
-Zone: asia-northeast3-a
-Series: N2
-Machine Type: n2-standard-4
-Boot disk:
-Image: Ubuntu 22.04 LTS (30 GB)
-Firewall: Check both
-Allow HTTP traffic
-Allow HTTPS traffic
-```
-
-## **Step 3:** **Assign static IP**
-
-*View Network details > IP addresses > Reserve external static IP address*
-
-## **Step 4: Enable SSH**
-
-Generate and copy key
-
-```
-ssh-keygen -t rsa -f ~/.ssh/mlops-zoomcamp -C pytholic
-cat ~/.ssh/mlops-zoomcamp.pub
-```
-
-On GCP console, enter the copied public key
-
-Compute Engine*> Metadata > SSH Key*
-
-## Step 5: SSH into instance
-
-```
-ssh -i ~/.ssh/mlops-zoomcamp pytholic@<External VM IP>
-```
-
-Optional, Add host to hostname file for easy login
-
-Enter the following into `~/.ssh/config`
-
-```
-vim ~/.ssh/config
-```
-
-```
-Host gcp-mlops-zoomcamp
-    HostName 34.64.207.252 # VM Public IP
-    User pytholic # VM user
-    IdentityFile ~/.ssh/mlops-zoomcamp # Private SSH key file
-    StrictHostKeyChecking no
-```
-
-```
-ssh gcp-mlops-zoomcamp
-```
-
-## Step 6: Install dependencies
-
-- Anaconda
-
-```
-cd ~
-wget https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-x86_64.sh
-bash Anaconda3-2022.05-Linux-x86_64.sh
-```
-
-- Docker
-
-```
-sudo apt update
-sudo apt install docker.io
-```
-
-- Docker-Compose
-
-```
-sudo apt install docker-compose
-```
-
-Add current user to docker group
-
-```
-sudo usermod -aG docker $USER
-```
-
-Log out and log in again.
-
-- Verify installations
-
-```
-which python
-# /home/pytholic/anaconda3/bin/python
-
-which docker
-# /usr/bin/docker
-
-which docker-compose
-# /usr/bin/docker-compose
-
-docker run hello-world
-```
-
-## Step 7: Connect with VS Code
-
-- Install `Remote SSH` extension
-- Connect to host
-- Select `gcp-mlops-zoomcamp`
-
-## Step 8: Connect Jupyter Notebook
-
-- Run notebook in remote terminal jupyter notebook 
-- Use port forwarding
-- In VS Code
-    - Go to `ports` tab and forward `8888`
-
-![port forwarding image](./assets/port1.png)
-
-- Go to `localhost:8888`
-- Copy `token` from terminal and set a new password
-
-# Dataset
-Website
-
-https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page
-
-<br>
-Download 2021 data for the Green Taxi (January and February)
-
-```
-mkdir data
-wget https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2021-01.parquet
-wget https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2021-02.parquet
-```
-
-<br>
-Reference
-
-https://www.nyc.gov/assets/tlc/downloads/pdf/data_dictionary_trip_records_green.pdf
-
-<br>
-Reading parquet data
-
-```
-pip install pyarrow
-```
-
-```
-import pandas as pd
-df = pd.read_parquet("./data/green_tripdata_2022-01.parquet")
-```
-
-# 02 - Experiment Tracking
-
-We will use **MLflow** for it.
-
-## Why tracking?
-
-Mainly for three main reasons:
-
-- Reproducibility
-- Organization
-- Optimization
+# Setup
 
 ## Install requirements
 
@@ -199,18 +35,10 @@ Install requirements
 pip install -r requirements.txt
 ```
 
+
+## For remote VM
 Forward MLflow port which is `5000`.
-![Alt text](assets/port2.png)
+![mlflow port forwarding](assets/port2.png)
 
-```
-mlflow ui --backend-store-uri sqlite:///mlflow.db
-```
-
-## Experiments
-
-- First we train a simple Linear Regression model.
-- Then we train `xgboost` model with hyperparameter optimization using `hyperopt`.
-    - Run and compare different models
-    - Pick the one with lowest `rmse`
-
-![Alt text](assets/experiments.png)
+Also forward the port for `jupyter` if you are using it.
+![jupyter port forwarding](assets/port1.png)
