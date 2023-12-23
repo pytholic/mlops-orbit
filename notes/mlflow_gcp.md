@@ -114,3 +114,97 @@ In the google cloud dashboard
 You can also create a folder like `mlruns` in the bucket.
 
 ![GCP Bucket](../assets/gcp-bucket.png)
+
+Note that before we can upload artifacts to this bucket, we need to create a `service account key` for authentication. Go to `Service Accounts` and then select the service account associated with out `Tracking Server`. Go to `Keys`, `Add Key`, and then generate a `JSON` key. This will download the key to your local machine. If you are using remote VM, you might have to copy this file to your tracking VM.
+```
+gcloud compute scp ~/Downloads/key.json <VM NAME>:~/
+```
+
+# Run the MLFlow Server on Remote Tracking Server
+Now all the setup is done. `SSH` into the remote tracking VM. To avoid package conflicts, install `miniconda` and create a `venv`.
+
+## Install miniconda.
+```
+mkdir -p ~/miniconda3
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
+bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
+rm -rf ~/miniconda3/miniconda.sh
+
+~/miniconda3/bin/conda init bash
+source ~/.bashrc
+```
+
+Create `venv` and install packages.
+```
+pip install mlflow boto3 google-cloud-storage psycopg2-binary
+```
+
+## Port Forwarding
+Connect to VM in VS Code and forward the port. 
+![GCP Tracking Server Port Forward](../assets/gcp-tracking-server-port-forward.png)
+We can also do this in `~/.ssh/config`.
+```
+Host gcp-mlflow-tracking-server
+    HostName 34.64.84.237 # VM Public IP
+    User pytholic # VM user
+    IdentityFile ~/.ssh/mlops-zoomcamp # Private SSH key file
+    StrictHostKeyChecking no
+    LocalForward 5001 0.0.0.0:5000
+```
+Else, we can directly use `<VM EXTERNAL IP>:5000`.
+
+## Run the server
+Run the mlflow server:
+```
+mlflow server \
+    -h 0.0.0.0 \
+    -p 5000 \
+    --backend-store-uri postgresql://<user>:<pass>@<db private ip>:5432/<db name> \
+    --default-artifact-root gs://<bucket name>/<folder name>
+```
+
+Go to the address `0.0.0.0:5000` on your local machine and you should see the MLFlow UI.
+
+# Working with remote tracking server
+Let's review what we have so far.
+- A remote GCP instance (`n2-standard-4`) where we run our machine learning experiments.
+- Another GCP instance (`e2-standard-2`) where we launch our remote tracking server.
+- A `PostrgreSQL` GCP instance to store MLFlow entities such as runs, parameters, metrics, tags, etc.
+- A `GCP Cloud Storage Bucket` to persist artifacts like `models`.
+
+Now, you can train a model on your machine or another VM and log mlflow data.
+
+```python
+import mlflow
+import os
+
+TRACKING_SERVER_HOST = "<tracking server external IP>"
+mlflow.set_tracking_uri(f"http://{TRACKING_SERVER_HOST}:5000")
+
+service_account_key_path = "../../../service_account_key.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = service_account_key_path
+
+print(f"tracking URI: '{mlflow.get_tracking_uri()}'")
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.datasets import load_iris
+from sklearn.metrics import accuracy_score
+
+mlflow.set_experiment("my-experiment-1")
+
+with mlflow.start_run():
+
+    X, y = load_iris(return_X_y=True)
+
+    params = {"C": 0.1, "random_state": 42}
+    mlflow.log_params(params)
+
+    lr = LogisticRegression(**params).fit(X, y)
+    y_pred = lr.predict(X)
+    mlflow.log_metric("accuracy", accuracy_score(y, y_pred))
+
+    mlflow.sklearn.log_model(lr, artifact_path="models")
+    print(f"default artifacts URI: '{mlflow.get_artifact_uri()}'")
+
+mlflow.search_experiments()
+```
