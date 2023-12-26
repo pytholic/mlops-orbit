@@ -29,6 +29,7 @@ pandas
 seaborn
 hyperopt
 xgboost
+prefect
 ```
 
 Install requirements
@@ -36,10 +37,25 @@ Install requirements
 pip install -r requirements.txt
 ```
 
+**Sklearn** - For machine learning
+**MLFlow** - For experiment tracking
+**Prefect** - For workflow orchestration
 
 ## For remote VM
-Forward MLflow port which is `5000`.
+Forward MLflow port which is `0.0.0.0:5000`.
 ![mlflow port forwarding](assets/port2.png)
 
-Also forward the port for `jupyter` if you are using it.
+Forward the port for `jupyter` if you are using it (`127.0.0.1:8888`).
 ![jupyter port forwarding](assets/port1.png)
+
+Forward port for Prefect server (`127.0.0.1:4200`).
+
+You can also do it in `~/.ssh/config`.
+```
+Host gcp-mlflow-tracking-server
+    HostName xx.xx.xx.xxx # VM Public IP
+    User pytholic # VM user
+    IdentityFile ~/.ssh/mlops-zoomcamp # Private SSH key file
+    StrictHostKeyChecking no
+    LocalForward 5001 0.0.0.0:5000
+```
