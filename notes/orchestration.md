@@ -19,7 +19,7 @@ mlflow ui --backend-store-uri sqlite:///mlflow.db
 pip install -U prefect
 ```
 
-## Terminology
+# Terminology
 **Task** - A discrete unit of work in a Prefect workflow<br>
 **Flow** - Container for workflow logic<br>
 **Subflow** - `Flow` called by another `flow`
@@ -47,6 +47,9 @@ Run the experiment.
 ```
 python orchestrate.py
 ```
+
+# Deployment
+Deployments are server-side representations of flows. They store the crucial metadata needed for remote orchestration including when, where, and how a workflow should run. Deployments elevate workflows from functions that you must call manually to API-managed entities that can be triggered remotely.
 
 ## Deploying workflow from local code
 
