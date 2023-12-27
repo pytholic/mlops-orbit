@@ -10,6 +10,8 @@ import mlflow
 import xgboost as xgb
 from prefect import flow, task
 from prefect_gcp import GcsBucket
+from prefect.artifacts import create_markdown_artifact
+from datetime import date
 
 
 @task(retries=3, retry_delay_seconds=2)
@@ -106,12 +108,30 @@ def train_best_model(
         mlflow.log_artifact("models/preprocessor.b", artifact_path="preprocessor")
 
         mlflow.xgboost.log_model(booster, artifact_path="models_mlflow")
+
+        # Artifact report
+        markdown__rmse_report = f"""# RMSE Report
+
+        ## Summary
+
+        Duration Prediction 
+
+        ## RMSE XGBoost Model
+
+        | Region    | RMSE |
+        |:----------|-------:|
+        | {date.today()} | {rmse:.2f} |
+        """
+
+        create_markdown_artifact(
+            key="duration-model-report", markdown=markdown__rmse_report
+        )
         
     return None
 
 
 @flow
-def main_flow(
+def main_flow_gcs(
     train_path: str = "../../data/green_tripdata_2021-01.parquet", 
     val_path: str = "../../data/green_tripdata_2021-02.parquet" 
 ) -> None:
@@ -134,4 +154,4 @@ def main_flow(
     train_best_model(X_train, X_val, y_train, y_val, dv)
 
 if __name__ == "__main__":
-    main_flow()
+    main_flow_gcs()

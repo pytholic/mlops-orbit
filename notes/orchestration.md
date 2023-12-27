@@ -95,7 +95,7 @@ prefect server start
 ```
 
 ### 01-Clone the repo
-Clone the repo with all the code.
+Create a separate repo with the `orchestrate.py` and `data`. Clone the repo with all the code.
 
 ### 02-Initialize Prefect Project
 Initialize prefect project. This time select `git` instead of `local`.
@@ -158,8 +158,88 @@ prefect block register -m prefect_gcp
 ```
 
 ## Using GCP Bucket Block in Prefect
-Maybe we want to see what our `rmse` is every week or every month.
 
 Upload data to the GCP Bucket with `03-workflow-orchestration/04-working-with-deployments/uploaded_folder_contents.py`. Reference [link](https://cloud.google.com/storage/docs/samples/storage-transfer-manager-upload-directory).
 
 Next modify the data path as in `03-workflow-orchestration/04-working-with-deployments/orchestrate_gs.py` to download data from `GCP Bucket` and train the model.
+
+## Using Bucket Data with Deployment
+
+### Create a repo
+I will be using a separate repository since we are using `git` and need to fetch data and code from remote `repo`.
+```
+orchestrate.py
+prefect.yaml
+orchestrate_gs.py
+```
+
+### Create deployment configuration
+Next we create a `deployment.yaml` with two deployments.
+```
+deployments:
+- name: taxi_local_data
+  entrypoint: orchestrate.py:main_flow
+  work_pool:
+    name: zoompool
+- name: taxi_gcs_data
+  entrypoint: orchestrate_gs.py:main_flow_gcs
+  work_pool:
+    name: zoompool
+```
+
+Go to the `orchestrate_gcs.py` and modify `main_flow` to `main_flow_gcs`.
+
+### Deploy
+Deploy the deployments.
+```
+prefect deploy --all
+```
+
+In case you see deployment duplication error, open `prefect.yaml` and remove `deployment` section since we will use `deployment.yaml` now.
+
+### Create an Artifact
+Maybe we want to see what our `rmse` is every week or every month.
+
+```
+markdown__rmse_report = f"""# RMSE Report
+3
+## Summary
+
+Duration Prediction 
+
+## RMSE XGBoost Model
+
+| Region    | RMSE |
+|:----------|-------:|
+| {date.today()} | {rmse:.2f} |
+"""
+
+create_markdown_artifact(
+    key="duration-model-report", markdown=markdown__rmse_report
+)
+```
+
+### Push the updated code to github
+Push the changes to the repo, since we will use repo code.
+
+### Run the deployment
+
+Start the worker in one terminal.
+```
+prefect worker start -p zoompool
+```
+
+Run the deployment in a new terminal. You can also verify names in the UI under `Deployments` tab or using `prefect deployment ls`.
+```
+prefect deployment run 'main-flow-gcs/taxi_gcs_data'
+```
+
+You can also check `RMSE Report` under the `Artifacts` tab in Prefect UI.
+
+### Scheduling
+We can go to our deployment in Ui and click on `Schedule`. This will schedule automatic runs for our experiment. You can check all the schedules runs by going to `Flows` and then `<FLOW NAME>`.
+
+We can also use `CLI` for this.
+```
+prefect deployment set-schedule main-flow/tax1 --interval 120
+```
