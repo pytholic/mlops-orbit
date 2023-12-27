@@ -6,3 +6,4 @@ seaborn
 hyperopt
 xgboost
 prefect
+prefect-gcp

@@ -30,6 +30,7 @@ seaborn
 hyperopt
 xgboost
 prefect
+prefect-gcp
 ```
 
 Install requirements

@@ -104,3 +104,62 @@ prefect init
 ```
 
 Next repeat the above steps. Make sure to push the `data` folder to git repo since prefect will clone it. We can see in the `Worker` terminal that it first clones the repo and then executes the workflow.
+
+# Working with deployments
+
+## Set up the key
+First, we need to give storage access to our VM. Else we will get `Access denied` response.
+
+### 1. Create a Service Account
+
+- Go to the `Google Cloud Console`.
+- Navigate to the `IAM & Admin` page.
+- Click on `Service Accounts` and then `Create Service Account`.
+- Follow the prompts to create a new service account, giving it the necessary storage permissions.
+
+### 2. Download JSON Key File
+
+- After creating the service account, click on it in the `Service Accounts` list.
+- Navigate to the `Keys` tab.
+- Click on `Add Key` and choose JSON. This will download a JSON key file containing the credentials.
+
+### 3. Set the Environment Variable
+- Upload the key to VM from your local machine
+```
+gcloud compute scp ~/Downloads/keyfile.json <VM NAME>:~/
+```
+- Set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable in your Python script to point to the location of the downloaded JSON key file.
+```python
+import os
+
+# Set the environment variable to the path of your JSON key file
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/path/to/your/keyfile.json"
+```
+
+## Create and store a GCP Storage Bucket with Prefect
+Install `prefect-gcp` client.
+```
+pip install prefect-gcp
+```
+
+Follow `03-workflow-orchestration/04-working-with-deployments/create_gcs_bucket.py` to create the bucket. Note that we also modify the `Public access` and `Access control` using google storage `Python API`.
+
+After that you can see bucket in the GCP UI.
+![Prefect GCP Bucket](../assets/prefect-gs-bucket.png)
+
+
+## Using Prefect Blocks
+We can also check `Prefect Blocks` section.
+![Prefect Blocks](../assets/prefect-blocks.png)
+
+You can also use `prefect blocks ls` to list all the blocks. In order to use this blocks, we need to send them to the server.
+```
+prefect block register -m prefect_gcp
+```
+
+## Using GCP Bucket Block in Prefect
+Maybe we want to see what our `rmse` is every week or every month.
+
+Upload data to the GCP Bucket with `03-workflow-orchestration/04-working-with-deployments/uploaded_folder_contents.py`. Reference [link](https://cloud.google.com/storage/docs/samples/storage-transfer-manager-upload-directory).
+
+Next modify the data path as in `03-workflow-orchestration/04-working-with-deployments/orchestrate_gs.py` to download data from `GCP Bucket` and train the model.

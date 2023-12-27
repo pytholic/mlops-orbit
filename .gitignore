@@ -2,3 +2,6 @@ mlruns*
 mlflow.db
 .ipynb_checkpoints/
 .trash/
+__pycache__
+.prefect
+.prefectignore
