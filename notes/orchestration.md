@@ -173,8 +173,8 @@ prefect.yaml
 orchestrate_gs.py
 ```
 
-### Create deployment configuration
-Next we create a `deployment.yaml` with two deployments.
+### Add deployments
+Add following to `prefect.yaml`.
 ```
 deployments:
 - name: taxi_local_data
@@ -194,8 +194,6 @@ Deploy the deployments.
 ```
 prefect deploy --all
 ```
-
-In case you see deployment duplication error, open `prefect.yaml` and remove `deployment` section since we will use `deployment.yaml` now.
 
 ### Create an Artifact
 Maybe we want to see what our `rmse` is every week or every month.
@@ -243,3 +241,47 @@ We can also use `CLI` for this.
 ```
 prefect deployment set-schedule main-flow/tax1 --interval 120
 ```
+
+# Prefect Cloud
+Hosted by Prefect in the cloud. We can switch from locally hosted server to cloud-based. We will use separate repo again with:
+```
+prefect.yaml
+orchestrate_gs.py
+```
+
+## Create an account
+Head over to `app.prefect.cloud` and create an account.
+
+## Login
+In the terminal type `prefect cloud login`. You can choose `Web Browser` or an `API Key`. 
+
+To create an API key:
+- Click on the Account Icon at the bottom left corner
+- Select a name and create the key.
+- Copy the API key. When prompted, paste it in the terminal.
+
+Verify by running `prefect version`.
+
+## Running deployments on cloud
+
+Start worker.
+```
+prefect worker start -p zoompool -t process
+```
+
+Register blocks.
+```
+prefect block register -m prefect_gcp
+```
+
+Create a new bucket (modify the name) and upload data in it. Modify the bucket name in `orchestrate_gs.py`
+```
+python create_gcs_bucket.py
+```
+
+Deploy.
+```
+prefect deploy --all
+```
+
+Go to the `Prefect UI > Deployments`. Click on `taxi_gcs_data` and hit `Run > Quick Run`.

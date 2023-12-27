@@ -1,0 +1,30 @@
+# Welcome to your prefect.yaml file! You can use this file for storing and managing
+# configuration for deploying your flows. We recommend committing this file to source
+# control along with your flow code.
+
+# Generic metadata about this project
+name: git-prefect
+prefect-version: 2.14.12
+
+# build section allows you to manage and build docker images
+build:
+
+# push section allows you to manage if and how this project is uploaded to remote locations
+push:
+
+# pull section allows you to provide instructions for cloning this project in remote locations
+pull:
+- prefect.deployments.steps.git_clone:
+    repository: git@github.com:pytholic/mlops-zoomcamp-prefect.git
+    branch: main
+    access_token:
+
+deployments:
+- name: taxi_local_data
+  entrypoint: orchestrate.py:main_flow
+  work_pool:
+    name: zoompool
+- name: taxi_gcs_data
+  entrypoint: orchestrate_gs.py:main_flow_gcs
+  work_pool:
+    name: zoompool
