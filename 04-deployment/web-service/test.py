@@ -7,7 +7,8 @@ ride = {
     "trip_distance": 40
 }
 
-url = "http://127.0.0.1:9696/predict"
+# url = "http://127.0.0.1:9696/predict"
+url = "http://172.18.0.2:30001/predict"
 response = requests.post(url, json=ride)
 print(response.json())
 

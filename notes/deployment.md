@@ -303,22 +303,7 @@ kubectl get node -o wide
 kubectl get svc
 ```
 
-Now we can access our app at `INTERNAL_IP:nodePort` e.g. `172.18.0.2:30001`.
-
-In my case, I am using VM on google cloud. So I need to forward the port in `~/.ssh/config`.
-```
-Host gcp-mlops-zoomcamp
-    HostName 34.64.207.252 # VM Public IP
-    User pytholic # VM user
-    IdentityFile ~/.ssh/mlops-zoomcamp # Private SSH key file
-    StrictHostKeyChecking no
-    LocalForward 5000 0.0.0.0:5000
-    LocalForward 9696 0.0.0.0:9696
-    LocalForward 30001 172.18.0.2:30001
-    LocalForward 4200 127.0.0.1:4200
-```
-
-Now in my local machine, I can download `test.py` script abd modify the `URL`.
+Now we can access our app at `INTERNAL_IP:nodePort` e.g. `172.18.0.2:30001`. Modify the `URL` in `test.py`.
 ```
 import os
 import requests
@@ -329,7 +314,7 @@ ride = {
     "trip_distance": 40
 }
 
-url = "http://127.0.0.1:30001/predict"
+url = "http://172.18.0.2:30001/predict"
 response = requests.post(url, json=ride)
 print(response.json())
 ```
@@ -341,4 +326,17 @@ python test.py
 {'duration': 25.82088226584449}
 ```
 
-So now we can access our app on local machine.
+Instead of using direct port forwarding, we are now using kubernetes service
+
+In my case, I am using VM on google cloud. So I need to forward the port in `~/.ssh/config`.
+```
+Host gcp-mlops-zoomcamp
+    HostName xx.xx.xxx.xxx # VM Public IP
+    User pytholic # VM user
+    IdentityFile ~/.ssh/mlops-zoomcamp # Private SSH key file
+    StrictHostKeyChecking no
+    LocalForward 5000 0.0.0.0:5000
+    LocalForward 9696 0.0.0.0:9696
+    LocalForward 30001 172.18.0.2:30001
+    LocalForward 4200 127.0.0.1:4200
+```
