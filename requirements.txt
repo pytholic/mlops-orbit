@@ -7,3 +7,7 @@ hyperopt
 xgboost
 prefect
 prefect-gcp
+flask
+requests
+gunicorn
+pip-tools

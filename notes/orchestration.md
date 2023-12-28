@@ -1,4 +1,4 @@
-# Overview
+# Orchestration Overview
 We can have failure points at different parts of our ML workflow, and things might break. It is important to deal with unexpected downtime and errors in an automatic fashion. 
 
 # Simple orchestration

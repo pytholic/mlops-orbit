@@ -1,7 +1,12 @@
 # MLOps Pipeline
 ![Machine Learning Lifecycle](assets/mlops.png)
+This repository is my official beginning of MLOps journey. Instead of focusing on piece of production-grade machine learning, we will be building full end-to-end pipeline.
 
-We will be training simple regression models on NYC taxi ride dataset and build MLOps pipeline including model training, hyperparameter optimization, experiment tracking, orchestrating, deployment, monitoring, etc. This repository is based on the MLOps course by DataTalks.Club.
+We will be training simple regression models on NYC taxi ride dataset and build MLOps pipeline including model training, hyperparameter optimization, experiment tracking, orchestrating, deployment, monitoring, etc. This repository is inspired by the `mlops-zoomcamp` course by DataTalks.Club.
+
+*Since the MLOps tool landscape is very wide, There will be more follow up work on this with various tech stacks.*
+
+# Tech Stack
 
 # Notes
 [Setting up a VM on GCP](notes/gcp_setup.md)<br>
@@ -32,16 +37,16 @@ hyperopt
 xgboost
 prefect
 prefect-gcp
+flask
+requests
+gunicorn
+pip-tools
 ```
 
 Install requirements
 ```
 pip install -r requirements.txt
 ```
-
-**Sklearn** - For machine learning
-**MLFlow** - For experiment tracking
-**Prefect** - For workflow orchestration
 
 ## For remote VM
 Forward MLflow port which is `0.0.0.0:5000`.
@@ -60,4 +65,5 @@ Host gcp-mlflow-tracking-server
     IdentityFile ~/.ssh/mlops-zoomcamp # Private SSH key file
     StrictHostKeyChecking no
     LocalForward 5001 0.0.0.0:5000
+    LocalForward 4200 127.0.0.1:4200
 ```
