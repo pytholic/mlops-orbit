@@ -8,6 +8,7 @@ We will be training simple regression models on NYC taxi ride dataset and build 
 [Dataset](notes/dataset.md)<br>
 [MLFlow Experiment Tracking](notes/mlflow.md)<br>
 [MLFlow Experiment Tracking on GCP](notes/mlflow_gcp.md)
+[Workflow Orchestration with Prefect](notes/orchestration.md)
 
 # Setup
 
