@@ -272,6 +272,8 @@ Handling connection for 9696
 ```
 
 ### Create a service
+In a Kubernetes cluster, each Pod has an internal IP address. But the Pods in a Deployment come and go, and their IP addresses change. So it doesn’t make sense to use Pod IP addresses directly. With a Service, we get a stable IP address that lasts for the life of the Service, even as the IP addresses of the member Pods change.
+
 Add to `app.yaml`.
 
 ```
@@ -339,4 +341,135 @@ Host gcp-mlops-zoomcamp
     LocalForward 9696 0.0.0.0:9696
     LocalForward 30001 172.18.0.2:30001
     LocalForward 4200 127.0.0.1:4200
+```
+
+## Deployment on GKE
+We will be following [this](https://cloud.google.com/kubernetes-engine/docs/tutorials/hello-app) example.
+
+### Enable API
+Enable `Kubernetes Engine API` in the GCP Dashboard.
+
+### Push image to GCR (deprecated)
+
+Normally we can get project ID, create docker image, tag it and push to GCR (Google Container Registry).
+```
+# Authenticate with GCR
+gcloud auth configure-docker
+
+# Get project ID
+gcloud projects list.
+
+# Tag image
+docker tag ride-duration-prediction-service:v1 gcr.io/your-project-id/ride-duration-prediction-service:v1
+
+# Push to GCR
+docker push gcr.io/your-project-id/ride-duration-prediction-service:v1
+```
+
+However, Container Registry is deprecated. Now we are advised to use Artifact Registry.
+
+### Push image to Artifact Registry
+You must upload the container image to a registry so that your GKE cluster can download and run the container image.
+
+#### 01-Tag the image
+First of all, tag the image:
+```
+docker tag ride-duration-prediction-service:v1  asia-northeast3-docker.pkg.dev/mlops-demo-408506/taxi-ride-repo/ride-duration-prediction-service:v1
+```
+
+#### 02-Create an artifact repository
+Next, we need to create an `artifact repository` on GCP. We can use Dashboard for it or the CLI. Make sure you have the correct permissions.
+```
+# CLI
+gcloud artifacts repositories create taxi-ride-repo \
+    --repository-format=docker \
+    --location=asia-northeast3
+
+# Dashboard
+Artifact Registry > CREATE REPOSITORY
+```
+
+#### 03-Set registry permissions
+The add correct permissions to your service account. I am using `owner` account on local machine to give correct permission to the service account. Then I will this service account in my remote VM to push the docker image.
+
+```
+gcloud artifacts repositories add-iam-policy-binding taxi-ride-repo \
+    --location=asia-northeast3 \
+    --member=serviceAccount:<SERVICE ACCOUNT ID>-compute@developer.gserviceaccount.com \
+    --role="roles/artifactregistry.reader"
+```
+
+Verify the repository and permissions.
+```
+gcloud artifacts repositories list --location=asia-northeast3
+```
+![Artifact Repo](../assets/artifact-repo.png)
+
+#### 04-Set authentication 
+```
+gcloud auth activate-service-account <SERVICE ACCOUNT ID>-compute@developer.gserviceaccount.com --key-file=service_account_key.json
+```
+[Refrence](https://cloud.google.com/artifact-registry/docs/docker/authentication)
+
+#### 05-Push image to the registry
+```
+docker push asia-northeast3-docker.pkg.dev/mlops-demo-408506/taxi-ride-repo/ride-duration-prediction-service:v1
+```
+
+### Create a GKE cluster
+Create a GKE cluster. It will take some time.
+```
+gcloud container clusters create taxi-ride-cluster 
+gcloud container clusters list
+```
+
+If you see `gke-gcloud-auth-plugin` related issue, install it:
+```
+gcloud components install gke-gcloud-auth-plugin
+or
+sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
+```
+
+### Deploying the app to GKE
+We are now ready to deploy our Docker image to your GKE cluster.
+
+Ensure that you are connected to your GKE cluster.
+```
+gcloud container clusters get-credentials taxi-ride-cluster --region asia-northeast3-a
+```
+
+Create a Kubernetes Deployment for the `taxi-ride` app Docker image.
+```
+kubectl create deployment taxi-ride-app --image=asia-northeast3-docker.pkg.dev/mlops-demo-408506/taxi-ride-repo/ride-duration-prediction-service:v1
+
+kubectl get deployment
+```
+
+Expose app to the internet. The default Service type in GKE is called `ClusterIP`, where the Service gets an IP address reachable only from inside the cluster. To expose a Kubernetes Service outside the cluster, create a Service of type `LoadBalancer`.
+```
+kubectl expose deployment taxi-ride-app --name=taxi-ride-app-service --type=LoadBalancer --port 80 --target-port 9696
+
+service/taxi-ride-app-service exposed
+```
+
+Run the following command to get the Service details for `taxi-ride-app-service` and note the `EXTERNAL IP`.
+```
+kubectl get service
+```
+*Note: It might take a few minutes for the Load Balancer to be provisioned. Until the Load Balancer is provisioned, you might see a `<pending>` IP address.*
+
+In the test script `test.py` modify the url to the new address and test the deployment.
+```python
+import os
+import requests
+
+ride = {
+    "PULocationID": 10,
+    "DOLocationID": 50,
+    "trip_distance": 40
+}
+
+url = "http://<EXTERNAL IP>/predict" # GKE
+response = requests.post(url, json=ride)
+print(response.json())
 ```
