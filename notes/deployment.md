@@ -491,3 +491,47 @@ gcloud artifacts docker images delete \
     asia-northeast3-docker.<PROJECT ID>/taxi-ride-repo/ride-duration-prediction-service:v1 \
     --delete-tags --quiet
 ```
+
+# Getting the model from model registry
+## Setup
+- Run an experiment with `RandomForestRegressor`
+- Save `tracking data` in local storage
+- Save `artifacts` in GCP Bucket
+- Load the model from `model registry`
+- Deploy the model as `web service`
+
+## Create a GCP Bucket
+Create a new Google Cloud Storage Bucket.
+```
+gcloud storage buckets create gs://BUCKET_NAME --project=PROJECT_ID --default-storage-class=STANDARD --location=BUCKET_LOCATION --uniform-bucket-level-access
+```
+
+```
+gcloud storage buckets create gs://mlops-zoomcamp-artifacts --project=mlops-demo-408506 --default-storage-class=STANDARD --location=asia-northeast3 --uniform-bucket-level-access
+```
+
+## Start MLFlow server
+```
+mlflow server --host=0.0.0.0 \
+--backend-store-uri=sqlite:///mfllow.db \
+--default-artifact-root=gs://pytholic-mlops-zoomcamp-artifacts/
+```
+
+## Train the model and save in registry
+Follow `04-deployment/web-service-model-registry/random-forest.ipynb`. We will make use of `sklearn pipeline`. Save the model and `dict_vectorizer.bin` in the registry bucket.
+
+## Run Prediction
+Make changes as shown in `04-deployment/web-service-mlflow/predict.py` to load model and dict vectorizer from mlflow server.
+
+We also need to install `mlflow` and `boto3` in our `deployment` environment.
+```
+pip install mlflow boto3 google-cloud-storage
+```
+
+Test.
+```
+python test.py
+
+
+{'duration': 45.50965007660853, 'model_version': '553def03f5224f649fe56bc1567daccc'}
+```
