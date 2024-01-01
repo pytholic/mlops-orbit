@@ -440,7 +440,7 @@ gcloud container clusters get-credentials taxi-ride-cluster --region asia-northe
 
 Create a Kubernetes Deployment for the `taxi-ride` app Docker image.
 ```
-kubectl create deployment taxi-ride-app --image=asia-northeast3-docker.pkg.dev/mlops-demo-408506/taxi-ride-repo/ride-duration-prediction-service:v1
+kubectl create deployment taxi-ride-app --image=asia-northeast3-docker.pkg.dev/<PROJECT ID>/taxi-ride-repo/ride-duration-prediction-service:v1
 
 kubectl get deployment
 ```
@@ -472,4 +472,22 @@ ride = {
 url = "http://<EXTERNAL IP>/predict" # GKE
 response = requests.post(url, json=ride)
 print(response.json())
+```
+
+### Clean up
+Delete the service.
+```
+kubectl delete service taxi-ride-app-service
+```
+
+Delete the cluster.
+```
+gcloud container clusters delete taxi-ride-cluster --region asia-northeast3-a
+```
+
+Delete the container images.
+```
+gcloud artifacts docker images delete \
+    asia-northeast3-docker.<PROJECT ID>/taxi-ride-repo/ride-duration-prediction-service:v1 \
+    --delete-tags --quiet
 ```
