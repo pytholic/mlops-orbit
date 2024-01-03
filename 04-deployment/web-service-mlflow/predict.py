@@ -4,13 +4,11 @@ from flask import Flask, request, jsonify
 from mlflow.tracking import MlflowClient
 
 
-MLFLOW_TRACKING_URI = "http://0.0.0.0:5000"
-RUN_ID="553def03f5224f649fe56bc1567daccc"
-
-client = MlflowClient(MLFLOW_TRACKING_URI)
-mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+# MLFLOW_TRACKING_URI = "http://0.0.0.0:5000"
+# mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 
 # # Load dict vectorizer
+# client = MlflowClient(MLFLOW_TRACKING_URI)
 # path = client.download_artifacts(run_id=RUN_ID, path="dict_vectorizer.bin")
 # print(F"Downloading the Dict Vectorizer to {path}..")
 
@@ -18,7 +16,10 @@ mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 #     dv = pickle.load(f_in)
 
 # Load model
-logged_model = f'runs:/{RUN_ID}/model'
+EXPERIMENT_ID = 1
+RUN_ID = "553def03f5224f649fe56bc1567daccc"
+logged_model = f"gs://pytholic-mlops-zoomcamp-artifacts/{EXPERIMENT_ID}/{RUN_ID}/artifacts/model"
+# logged_model = f'runs:/{RUN_ID}/model'
 model = mlflow.pyfunc.load_model(logged_model)
 
 def prepare_features(ride):
