@@ -14,7 +14,8 @@ We will be training simple regression models on NYC taxi ride dataset and build 
 [MLFlow Experiment Tracking](notes/mlflow.md)<br>
 [MLFlow Experiment Tracking on GCP](notes/mlflow_gcp.md)<br>
 [Workflow Orchestration with Prefect](notes/orchestration.md)<br>
-[Model Deployment](notes/deployment.md)<br>
+[Model Deployment as a web-service with Docker, Kubernetes, and GKS.](notes/web_service_deployment.md)<br>
+[Model Deployment with model from model registry](04-deployment/web-service-mlflow/README.md)<br>
 
 # Setup
 
