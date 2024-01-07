@@ -15,13 +15,14 @@ We will be working with `PubSub` and `Cloud Functions` on `GCP`. In case of `AWS
 # Before you begin
 - Enable the Cloud Functions, Cloud Build, Artifact Registry, Eventarc, Cloud Logging API, Cloud Run Admin API, and Pub/Sub APIs in `APIs & Services`.
 
-# 01-Create a Pub/Sub topic:
+# 01-Pub/Sub topic:
+Cerate a PubSub topic.
 ```
 gcloud pubsub topics create YOUR_TOPIC_NAME
 gcloud pubsub topics list
 ```
 
-# 02-Create a test Cloud Function
+# 02-Consumer Function
 Go to `Cloud Functions` and create a new function. Name it `ride-prediction-test` and select the `PubSub` trigger. Choose the topic that we created earlier. Since this is a stream, we also need to keep track of `Ride ID` to know which prediction belongs to which user.
 
 Write the function code:
@@ -69,6 +70,8 @@ Check the console output.
 [3:12:08 PM] - Execution response: {"ride_duration":10,"ride_id":123}
 ```
 
+*For now we are not using the actual `model` to get predictions.
+*
 ## PubSub Test
 Test with sample `PubSub` input. Use the above input dict and encode it to `base64` (PubSub works with encoded data). Paste the `encoded` input in `"data"` value.
 ```
@@ -156,3 +159,103 @@ LEVEL  NAME                  TIME_UTC                 LOG
 
 We can also check the response in UI inside `LOGS`.
 ![Cloud Function logs](../../assets/cloud-function-logs-ui.png)
+
+Update the function slightly.
+```python
+@functions_framework.cloud_event
+def predict_duration(cloud_event):
+    decoded = base64.b64decode(cloud_event.data["message"]["data"])
+    data = json.loads(decoded)
+    ride = data["ride"]
+    ride_id = data["ride_id"]
+    features = prepare_features(ride)
+    predicted_duration = round(predict(features))
+    prediction = {
+      'ride_duration': predicted_duration, "ride_id": ride_id
+      }
+    print(prediction)
+    return {
+        "prediction": prediction
+    }
+```
+
+Publish a message and check logs again.
+```
+LEVEL  NAME                  TIME_UTC                 LOG
+       ride-prediction-test  2024-01-07 07:30:55.244  {'ride_duration': 10, 'ride_id': 123}
+```
+
+# 04- Publish the results 
+Since this is not `client-server` model, we need to put our results to another stream. Here we can use `PublisherClient` provided by `GCP`. For `AWS` we can use `boto3`.
+
+## Create a new stream
+First, we need to create a new stream. Head over to `PubSub Topics` and create a new topic. I named mine `ride-predictions`.
+
+## Modify the cloud function.
+```python
+import os
+import base64
+import json
+import functions_framework
+from google.cloud import pubsub_v1
+
+publisher = pubsub_v1.PublisherClient()
+PROJECT_ID = os.getenv("PROJECT_ID", "mlops-demo-408506")
+TOPIC_NAME = os.getenv("PUBLISH_STREAM", "ride-predictions")
+topic_path = publisher.topic_path(PROJECT_ID, TOPIC_NAME)
+
+
+def prepare_features(ride):
+    features = {}
+    features["PU_DO"] = "%s_%s" % (ride["PULocationID"], ride["DOLocationID"])
+    features["trip_distance"] = ride["trip_distance"]
+    return features
+
+def predict(features):
+    return 10.0
+
+def publish_to_topic(project_id, topic_name, message_json):
+    # Encode the message json
+    message_encoded = json.dumps(message_json).encode("utf-8")
+    # Publish the message to the topic
+    future = publisher.publish(topic_path, data=message_encoded)
+    # Verify that the message has arrived
+    print(future.result())
+
+@functions_framework.cloud_event
+def predict_duration(cloud_event):
+    decoded = base64.b64decode(cloud_event.data["message"]["data"])
+    data = json.loads(decoded)
+    ride = data["ride"]
+    ride_id = data["ride_id"]
+    features = prepare_features(ride)
+    predicted_duration = round(predict(features))
+    prediction = {
+      'ride_duration': predicted_duration, "ride_id": ride_id
+      }
+    print(prediction)
+
+    # Publish the result to another Pub/Sub topic
+    publish_to_topic(PROJECT_ID, TOPIC_NAME, prediction)
+
+    return prediction
+```
+
+*Make sure to add `google-cloud-pubsub` in `requirements.txt` of your cloud function. Otherwise, you will face deployment error.*
+
+## Test the function:
+1. Publish message to the first stream
+2. Cloud function will get triggered
+3. Check the log of the consumer function
+
+```
+gcloud functions logs read   --gen2   --region=asia-northeast3   --limit=1   ride-prediction-test
+```
+
+```
+LEVEL  NAME                  TIME_UTC                 LOG
+       ride-prediction-test  2024-01-07 15:48:15.407  9155007615350620
+```
+
+## Verify the published results
+We are now able to write to another stream. Now we need to read from this stream and verify that our function actually works.
