@@ -1,0 +1,5 @@
+functions-framework
+google-cloud-pubsub
+mlflow
+scikit-learn
+google-cloud-storage
