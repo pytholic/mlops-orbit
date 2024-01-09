@@ -315,11 +315,17 @@ gcloud pubsub topics publish taxi-ride-streaming --message '{
     },
     "ride_id": 123
 }'
+```
+```
 messageIds:
 - '10133540205021770'
 ```
 
 Check cloud function logs.
+```
+gcloud functions logs read   --gen2   --region=asia-northeast3   --limit=1   ride-prediction-test
+
+```
 ```
 LEVEL  NAME                  TIME_UTC                 LOG
        ride-prediction-test  2024-01-08 08:22:49.792  9157121336959326
@@ -375,6 +381,7 @@ gcloud pubsub subscriptions pull ride-predictions-sub --format=json | jq -r '.[]
 ```
 
 # 07-Adding model to the function
+Install all the requirements from `requirements.txt`.
 
 ## Changes
 Create a `cloud_function.py` and paste the function code. Then add the model loading part.
@@ -393,50 +400,34 @@ def predict(features):
     return pred[0]
 ```
 
-Due to a `dict` error, I also had to modify the following:
-```
-decoded = base64.b64decode(cloud_event.data["message"]["data"]) # before
-decoded = base64.b64decode(cloud_event["data"]["message"]["data"]) # after
-```
-
-Also add the `key` file to grant access.
-```python
-KEY_PATH = "/home/pytholic/service_account_key.json"
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/pytholic/service_account_key.json"
-```
-
 ## Test
-Write a `test.py`.
-```python
-import cloud_function
-
-event = {
-  "data": {
-    "message": {
-      "_comment": "data is base64 encoded string of 'Hello World'",
-      "data": "ewogICAgInJpZGUiOiB7CiAgICAgICAgIlBVTG9jYXRpb25JRCI6IDEzMCwKICAgICAgICAiRE9Mb2NhdGlvbklEIjogMjA1LAogICAgICAgICJ0cmlwX2Rpc3RhbmNlIjogMy42NgogICAgfSwgCiAgICAicmlkZV9pZCI6IDEyMwp9"
-    }
-  },
-  "type": "google.cloud.pubsub.topic.v1.messagePublished",
-  "specversion": "1.0",
-  "source": "//pubsub.googleapis.com/",
-  "id": "1234567890"
-}
-
-res = cloud_function.predict_duration(event)
-print(res)
+Publish a message to stream A.
+```
+gcloud pubsub topics publish taxi-ride-streaming --message '{                     "ride": {
+        "PULocationID": 130,
+        "DOLocationID": 205,
+        "trip_distance": 3.66
+    },
+    "ride_id": 123
+}'
+```
+```
+messageIds:
+- '10151926108302856'
 ```
 
-Run.
+Check cloud function logs.
 ```
-python test.py
+gcloud functions logs read   --gen2   --region=asia-northeast3   --limit=1   ride-prediction-test
+```
+```
+LEVEL  NAME                  TIME_UTC                 LOG
+       ride-prediction-test  2024-01-09 08:46:56.946  10152632029825425
+```
 
-{'model': 'ride_duration_prediction_model', 'version': 123, 'prediction': {'ride_duration': 18, 'ride_id': 123}}
+Read model pediction from Stream B.
 ```
-
-You can also check Stream B messages.
-```
-gcloud pubsub subscriptions pull ride-predictions-sub --limit=1 --format=json | jq -r '.[].message.data' | base64 --decode | jq
+gcloud pubsub subscriptions pull ride-predictions-sub --limit=1 --sort-by="Published On" --format=json | jq -r '.[].message.data' | base64 --decode | jq
 ```
 ```json
 {
@@ -448,5 +439,3 @@ gcloud pubsub subscriptions pull ride-predictions-sub --limit=1 --format=json | 
   }
 }
 ```
-
-# 08-Packaging

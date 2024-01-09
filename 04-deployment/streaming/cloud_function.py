@@ -5,8 +5,7 @@ import functions_framework
 import mlflow
 from google.cloud import pubsub_v1
 
-KEY_PATH = "/home/pytholic/service_account_key.json"
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/pytholic/service_account_key.json"
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/pytholic/service_account_key.json"
 
 publisher = pubsub_v1.PublisherClient()
 PROJECT_ID = os.getenv("PROJECT_ID", "mlops-demo-408506")
@@ -39,7 +38,7 @@ def publish_to_topic(project_id, topic_name, message_json):
 
 @functions_framework.cloud_event
 def predict_duration(cloud_event):
-    decoded = base64.b64decode(cloud_event["data"]["message"]["data"])
+    decoded = base64.b64decode(cloud_event.data["message"]["data"])
     data = json.loads(decoded)
     ride = data["ride"]
     ride_id = data["ride_id"]
