@@ -439,3 +439,10 @@ gcloud pubsub subscriptions pull ride-predictions-sub --limit=1 --sort-by="Publi
   }
 }
 ```
+
+# Further Notes
+If we want to further package this, we can use `Cloud Run`.
+- Convert `Cloud Function` to a `Flask` app
+- Containerize it and push to `Artifact Registry`
+- Deploy it with `Cloud Run`
+- Send request and get predictions
