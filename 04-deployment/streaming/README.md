@@ -1,4 +1,4 @@
-# Streaming Machine Learning Deployment
+# Streaming Machine Learning Deployment (Online)
 We will be working with `PubSub` and `Cloud Functions` on `GCP`. In case of `AWS`, we can use `AWS Lambda` and `AWS Kinesis`.
 
 Workflow:

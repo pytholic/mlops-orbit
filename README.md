@@ -16,6 +16,8 @@ We will be training simple regression models on NYC taxi ride dataset and build 
 [Workflow Orchestration with Prefect](notes/orchestration.md)<br>
 [Model Deployment as a web-service with Docker, Kubernetes, and GKS.](notes/web_service_deployment.md)<br>
 [Model Deployment with model from model registry](04-deployment/web-service-mlflow/README.md)<br>
+[Streaming Model Deployment (Online)](04-deployment/streaming/README.md)
+[Batch Model Deployment (Offline)](04-deployment/batch/README.md)
 
 # Setup
 
