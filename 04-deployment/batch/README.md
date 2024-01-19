@@ -11,7 +11,7 @@ Clean and remove extra stuff from the notebook. We will load the model and just 
 
 1. We will create a `result` dataframe and save it.
    - We will include a `ride-id` so that we can relate the predictions with the correct ride. Since we don't have it in our original dataframe, we will add artificial ones. Normally, `ride_ids` should already be there.
-   - We will also include some other information like pickup and dropoff location, actual dutation, predicted duration, and the difference between the two durations.
+   - We will also include some other information like pickup and drop-off location, actual dutation, predicted duration, and the difference between the two durations.
 
 2. Convert everything to functions.
 
@@ -20,6 +20,7 @@ Clean and remove extra stuff from the notebook. We will load the model and just 
 jupyter nbconvert --to script score.ipynb
 ```
 
+## Clean and parameterize
 Clean and parameterize the script like `score.py`.
 
 Run it.
@@ -35,3 +36,7 @@ Loading the model with RUN_ID=553def03f5224f649fe56bc1567daccc...
 Applying the model...
 Saving the result to output/green/2021-01.parquet...
 ```
+
+## Further Steps
+We can package our dependencies, create a docker container, and schedule it as kubernetes job or AWS batch etc.
+
