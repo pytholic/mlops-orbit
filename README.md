@@ -18,6 +18,7 @@ We will be training simple regression models on NYC taxi ride dataset and build 
 [Model Deployment with model from model registry](04-deployment/web-service-mlflow/README.md)<br>
 [Streaming Model Deployment (Online)](04-deployment/streaming/README.md)
 [Batch Model Deployment (Offline)](04-deployment/batch/README.md)
+[Scheduling batch scoring jobs with Prefect](04-deployment/batch/README.md#scheduling-batch-scoring-jobs-with-prefect)
 
 # Setup
 

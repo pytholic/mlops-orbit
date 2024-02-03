@@ -12,6 +12,7 @@ from prefect import task, flow, get_run_logger
 from prefect.context import get_run_context
 
 from dateutil.relativedelta import relativedelta
+from datetime import datetime
 
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.ensemble import RandomForestRegressor
@@ -85,8 +86,8 @@ def get_paths(run_date, taxi_type, run_id):
     year = prev_month.year
     month = prev_month.month 
 
-    input_file = f'gcp://taxi-ride-prediction/data/{taxi_type}_tripdata_{year:04d}-{month:02d}.parquet'
-    output_file = f's3://taxi-ride-prediction/output/taxi_type={taxi_type}/year={year:04d}/month={month:02d}/{run_id}.parquet'
+    input_file = f'gs://taxi-ride-prediction/data/{taxi_type}_tripdata_{year:04d}-{month:02d}.parquet'
+    output_file = f'gs://taxi-ride-prediction/output/taxi_type={taxi_type}/year={year:04d}/month={month:02d}/{run_id}.parquet'
 
     return input_file, output_file
 

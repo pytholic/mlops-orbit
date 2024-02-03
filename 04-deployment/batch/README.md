@@ -40,3 +40,21 @@ Saving the result to output/green/2021-01.parquet...
 ## Further Steps
 We can package our dependencies, create a docker container, and schedule it as kubernetes job or AWS batch etc.
 
+# Scheduling batch scoring jobs with Prefect
+Install the packages.
+```
+pip install prefect
+pip install python-dateutil
+```
+
+We will modify our previous `score.py`. I have created a new version `score-scheduled.py`.
+
+Switching back to local host.
+```
+prefect config set PREFECT_API_URL="http://127.0.0.1:4200/api"
+```
+
+Run the file.
+```
+python score-scheduled.py green 2021 2 1 553def03f5224f649fe56bc1567daccc
+```
