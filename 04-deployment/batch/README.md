@@ -11,7 +11,7 @@ Clean and remove extra stuff from the notebook. We will load the model and just 
 
 1. We will create a `result` dataframe and save it.
    - We will include a `ride-id` so that we can relate the predictions with the correct ride. Since we don't have it in our original dataframe, we will add artificial ones. Normally, `ride_ids` should already be there.
-   - We will also include some other information like pickup and drop-off location, actual dutation, predicted duration, and the difference between the two durations.
+   - We will also include some other information like pickup and drop-off location, actual duration, predicted duration, and the difference between the two durations.
 
 2. Convert everything to functions.
 
@@ -41,20 +41,56 @@ Saving the result to output/green/2021-01.parquet...
 We can package our dependencies, create a docker container, and schedule it as kubernetes job or AWS batch etc.
 
 # Scheduling batch scoring jobs with Prefect
-Install the packages.
+
+## Install the packages.
 ```
 pip install prefect
 pip install python-dateutil
 ```
 
-We will modify our previous `score.py`. I have created a new version `score-scheduled.py`.
+## Modify the script
+We will modify our previous `score.py`. I have created a new version `score_scheduled.py`.
 
-Switching back to local host.
+## Run the file
+
+Switching back to local `prefect` host (if you logged in to prefect cloud).
 ```
 prefect config set PREFECT_API_URL="http://127.0.0.1:4200/api"
 ```
 
 Run the file.
 ```
-python score-scheduled.py green 2021 2 1 553def03f5224f649fe56bc1567daccc
+python score_scheduled.py green 2021 2 1 553def03f5224f649fe56bc1567daccc
+```
+
+## Creating the Project
+We can use *Prefect Projects* in order to manage and maintain different deployments. **Projects** are a great way to add another layer of abstraction and customization of being able to group different deployments and workflows together. 
+
+Initiate a new project.
+```
+prefect project init
+```
+
+This will create some new files.
+```
+.prefectignore
+prefect.yaml
+.prefect/
+```
+
+## Creating deployment
+Now we can register our `ride_duration_prediction` flow with our deployment inside `prefect.yml` file.
+
+First create a new Work Pool from the UI. Select `Local Subprocess` and give it a name like `local-work`. Click `Next` and hit `Create`.
+
+Deploy the `flow`.
+```
+prefect deploy score_scheduled:ride_duration_prediction -n my-first-deployment -p local-work
+```
+Verify by checking `Deployments` in the `Prefect UI`.
+
+To execute flow runs from this deployment, start a worker in a separate terminal that pulls work from the 'local-work' work pool:
+
+```
+prefect worker start -t process -p local-work
 ```

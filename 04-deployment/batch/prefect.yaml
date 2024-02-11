@@ -1,0 +1,45 @@
+# Welcome to your prefect.yaml file! You can use this file for storing and managing
+# configuration for deploying your flows. We recommend committing this file to source
+# control along with your flow code.
+
+# Generic metadata about this project
+name: batch
+prefect-version: 2.14.16
+
+# build section allows you to manage and build docker images
+build:
+
+# push section allows you to manage if and how this project is uploaded to remote locations
+push:
+
+# pull section allows you to provide instructions for cloning this project in remote locations
+pull:
+- prefect.deployments.steps.set_working_directory:
+    directory: /home/pytholic/mlops-zoomcamp-pytholic/04-deployment/batch
+
+# the deployments section allows you to provide configuration for deploying flows
+deployments:
+- name:
+  version:
+  tags: []
+  description:
+  schedule: {}
+  flow_name:
+  entrypoint:
+  parameters: {}
+  work_pool:
+    name:
+    work_queue_name:
+    job_variables: {}
+- name: my-first-deployment
+  version:
+  tags: []
+  description:
+  entrypoint: score_scheduled:ride_duration_prediction
+  parameters: {}
+  work_pool:
+    name: local-work
+    work_queue_name:
+    job_variables: {}
+  schedule:
+  is_schedule_active: true

@@ -12,7 +12,7 @@ from prefect import task, flow, get_run_logger
 from prefect.context import get_run_context
 
 from dateutil.relativedelta import relativedelta
-from datetime import datetime
+from datetime import date
 
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.ensemble import RandomForestRegressor
@@ -96,7 +96,7 @@ def ride_duration_prediction(
     taxi_type: str,
     run_id: str,
     experiment_id: str,
-    run_date: datetime = None
+    run_date: date = None
 ):
     if run_date is None:
         ctx = get_run_context()
@@ -128,7 +128,7 @@ def run():
         taxi_type=taxi_type,
         run_id=RUN_ID,
         experiment_id=EXPERIMENT_ID,
-        run_date=datetime(year=year, month=month, day=1)
+        run_date=date(year=year, month=month, day=1)
     )
 
 
