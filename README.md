@@ -27,7 +27,8 @@ We will be training simple regression models on NYC taxi ride dataset and build 
 Create environment
 
 ```
-conda create -n exp-tracking python=3.9
+conda create -n mlops-orbit python=3.9
+conda activate mlops-orbit
 ```
 
 Install `pip-tools`.
