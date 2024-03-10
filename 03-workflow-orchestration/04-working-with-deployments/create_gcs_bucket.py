@@ -2,12 +2,13 @@ import json
 import os
 from time import sleep
 
+from dotenv import find_dotenv, load_dotenv
 from google.cloud import storage
 from google.cloud.storage.constants import PUBLIC_ACCESS_PREVENTION_ENFORCED
 from prefect_gcp import GcpCredentials, GcsBucket
 
-KEY_PATH = "/home/pytholic/service_account_key.json"
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/pytholic/service_account_key.json"
+load_dotenv(find_dotenv())
+KEY_PATH = os.getenv("GCS_ACCESS_TOKEN")
 
 
 def create_gcp_creds_block():

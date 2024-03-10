@@ -4,7 +4,7 @@
 
 # Generic metadata about this project
 name: batch
-prefect-version: 2.14.16
+prefect-version: 2.16.3
 
 # build section allows you to manage and build docker images
 build:
@@ -15,7 +15,7 @@ push:
 # pull section allows you to provide instructions for cloning this project in remote locations
 pull:
   - prefect.deployments.steps.set_working_directory:
-      directory: /home/pytholic/mlops-zoomcamp-pytholic/04-deployment/batch
+      directory: /Users/pytholic/Developer/personal/Projects/mlops/mlops-orbit/04-deployment/batch
 
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
@@ -41,5 +41,4 @@ deployments:
       name: local-work
       work_queue_name:
       job_variables: {}
-    schedule:
-    is_schedule_active: true
+    schedules: []

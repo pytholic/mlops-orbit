@@ -6,8 +6,6 @@ import functions_framework
 import mlflow
 from google.cloud import pubsub_v1
 
-# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/pytholic/service_account_key.json"
-
 publisher = pubsub_v1.PublisherClient()
 PROJECT_ID = os.getenv("PROJECT_ID", "mlops-demo-408506")
 TOPIC_NAME = os.getenv("PUBLISH_STREAM", "ride-predictions")

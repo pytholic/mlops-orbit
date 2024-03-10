@@ -4,15 +4,21 @@ import os
 import sys
 import uuid
 from datetime import date
+from typing import Union
 
 import mlflow
 import pandas as pd
 from dateutil.relativedelta import relativedelta
-from prefect import flow, task
+from dotenv import find_dotenv, load_dotenv
+from prefect import (
+    flow,
+    get_run_logger,
+    task,
+)
 from prefect.context import get_run_context
 
-service_account_key_path = os.path.expanduser("~") + "/service_account_key.json"
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = service_account_key_path
+load_dotenv(find_dotenv())
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GCS_ACCESS_TOKEN")
 
 
 # Utility functions
@@ -54,18 +60,19 @@ def load_model(experiment_id, run_id):
 
 @task
 def apply_model(input_file, experiment_id, run_id, output_file):
+    logger = get_run_logger()
 
-    print(f"Reading the data from {input_file}...")
+    logger.info(f"Reading the data from {input_file}...")
     df = read_dataframe(input_file)
     dicts = prepare_dictionaries(df)
 
-    print(f"Loading the model with RUN_ID={run_id}...")
+    logger.info(f"Loading the model with RUN_ID={run_id}...")
     model = load_model(experiment_id, run_id)
 
-    print("Applying the model...")
+    logger.info("Applying the model...")
     y_pred = model.predict(dicts)
 
-    print(f"Saving the result to {output_file}...")
+    logger.info(f"Saving the result to {output_file}...")
     df_result = pd.DataFrame()
     df_result["ride_id"] = df["ride_id"]
     df_result["lpep_pickup_datetime"] = df["lpep_pickup_datetime"]
@@ -94,7 +101,7 @@ def get_paths(run_date, taxi_type, run_id):
 
 @flow
 def ride_duration_prediction(
-    taxi_type: str, run_id: str, experiment_id: str, run_date: date = None
+    taxi_type: str, run_id: str, experiment_id: Union[str, int], run_date: date = None
 ):
     if run_date is None:
         ctx = get_run_context()

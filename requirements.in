@@ -12,3 +12,4 @@ requests
 gunicorn
 python-dotenv
 pre-commit
+python-dateutil

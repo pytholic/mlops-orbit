@@ -76,7 +76,7 @@ python score_scheduled.py green 2021 2 1 553def03f5224f649fe56bc1567daccc
 
 ## Creating the Project
 
-We can use *Prefect Projects* in order to manage and maintain different deployments. **Projects** are a great way to add another layer of abstraction and customization of being able to group different deployments and workflows together.
+We can use _Prefect Projects_ in order to manage and maintain different deployments. **Projects** are a great way to add another layer of abstraction and customization of being able to group different deployments and workflows together.
 
 Initiate a new project.
 
@@ -92,7 +92,7 @@ prefect.yaml
 .prefect/
 ```
 
-## Creating deployment
+## Creating deployment and run
 
 Now we can register our `ride_duration_prediction` flow with our deployment inside `prefect.yml` file.
 
@@ -110,4 +110,12 @@ To execute flow runs from this deployment, start a worker in a separate terminal
 
 ```
 prefect worker start -t process -p local-work
+```
+
+Now go to `Deployments` in the UI, and run the deployment. Alternative, open a new terminal and run:
+
+```
+# Example command
+
+prefect deployment run 'ride-duration-prediction/my-first-deployment' --param taxi_type=green --param run_id=553def03f5224f649fe56bc1567daccc --param experiment_id=1 --param run_date=2021-02-01
 ```

@@ -1,4 +1,7 @@
-#!/usr/bin/env python
+"""Batch scoring script.
+
+Created by @pytholic on 2024.03.10
+"""
 
 import os
 import sys
@@ -6,10 +9,9 @@ import uuid
 
 import mlflow
 import pandas as pd
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
 
-load_dotenv(".env")
-
+load_dotenv(find_dotenv())
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GCS_ACCESS_TOKEN")
 
 

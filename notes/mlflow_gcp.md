@@ -19,7 +19,7 @@ The architecture on GCP would be like the following image:
 
 # VM Tracking Server
 
-First we need to create a *firewall rule* for the tracking server.
+First we need to create a _firewall rule_ for the tracking server.
 
 ```
 gcloud compute --project=<PROJECT_ID> firewall-rules create mlflow-tracking-server \
@@ -205,8 +205,9 @@ import os
 TRACKING_SERVER_HOST = "<tracking server external IP>"
 mlflow.set_tracking_uri(f"http://{TRACKING_SERVER_HOST}:5000")
 
-service_account_key_path = "../../../service_account_key.json"
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = service_account_key_path
+from dotenv import find_dotenv, load_dotenv
+load_dotenv(find_dotenv())
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GCS_ACCESS_TOKEN")
 
 print(f"tracking URI: '{mlflow.get_tracking_uri()}'")
 

@@ -24,9 +24,11 @@ def upload_directory_with_transfer_manager(bucket_name, source_directory, worker
     import os
     from pathlib import Path
 
+    from dotenv import find_dotenv, load_dotenv
     from google.cloud.storage import Client, transfer_manager
 
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/pytholic/service_account_key.json"
+    load_dotenv(find_dotenv())
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GCS_ACCESS_TOKEN")
     storage_client = Client()
     bucket = storage_client.bucket(bucket_name)
 
