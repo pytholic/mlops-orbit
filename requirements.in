@@ -10,3 +10,5 @@ prefect-gcp
 flask
 requests
 gunicorn
+python-dotenv
+pre-commit

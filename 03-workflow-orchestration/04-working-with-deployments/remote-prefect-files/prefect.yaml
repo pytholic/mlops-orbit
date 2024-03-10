@@ -14,17 +14,17 @@ push:
 
 # pull section allows you to provide instructions for cloning this project in remote locations
 pull:
-- prefect.deployments.steps.git_clone:
-    repository: git@github.com:pytholic/mlops-zoomcamp-prefect.git
-    branch: main
-    access_token:
+  - prefect.deployments.steps.git_clone:
+      repository: git@github.com:pytholic/mlops-zoomcamp-prefect.git
+      branch: main
+      access_token:
 
 deployments:
-- name: taxi_local_data
-  entrypoint: orchestrate.py:main_flow
-  work_pool:
-    name: zoompool
-- name: taxi_gcs_data
-  entrypoint: orchestrate_gs.py:main_flow_gcs
-  work_pool:
-    name: zoompool
+  - name: taxi_local_data
+    entrypoint: orchestrate.py:main_flow
+    work_pool:
+      name: zoompool
+  - name: taxi_gcs_data
+    entrypoint: orchestrate_gs.py:main_flow_gcs
+    work_pool:
+      name: zoompool

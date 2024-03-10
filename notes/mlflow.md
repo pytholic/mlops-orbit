@@ -30,7 +30,7 @@ There are various tools like WandB, ClearML, MLFlow, and so on. We will focus on
 
 # MLFlow
 
-*An Open source platform for the machine learning lifecycle.*
+_An Open source platform for the machine learning lifecycle._
 
 It's a Python package with four main modules:
 
@@ -70,7 +70,7 @@ Make sure to forward the port if running on remote VM (port `5000` by default).
 
 ![mlflow port forwarding](../assets/port2.png)
 
-In addition to the backend URI, we can also add an artifact root directory where we store the artifacts for runs, this is done by adding a `--default-artifact-root` paramater:
+In addition to the backend URI, we can also add an artifact root directory where we store the artifacts for runs, this is done by adding a `--default-artifact-root` parameter:
 
 ```
 mlflow ui --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns
@@ -88,7 +88,7 @@ MLFLOW_TRACKING_URI = "sqlite:///mlflow.db"
 client = MlflowClient(tracking_uri=MLFLOW_TRACKING_URI)
 ```
 
-****
+______________________________________________________________________
 
 The `client` is an object that allows managing experiments, runs, models and model registries (cf. Interacting with MLflow through the Tracking Client). For more information on the interface check the [docs](https://www.notion.so/mlops-zoomcamp-157d4875e035457dab7c0516867c4863?pvs=21).
 
@@ -123,20 +123,20 @@ with mlflow.start_run():
 
     alpha = 0.01
     mlflow.log_param("alpha", alpha)
-    
+
     lr = Lasso(alpha)
     lr.fit(X_train, y_train)
-    
+
     y_pred = lr.predict(X_val)
     rmse = mean_squared_error(y_val, y_pred, squared=False)
     mlflow.log_metric("rmse", rmse)
 ```
 
-In the MLflow UI, within the `nyc-taxi-experiment` we now have a run logged with our logged parameters, tag, and metric.****
+In the MLflow UI, within the `nyc-taxi-experiment` we now have a run logged with our logged parameters, tag, and metric.\*\*\*\*
 
 ### Autologging
 
-Instead of logging manually, we can use *Autologging* feature provided by MLFlow.
+Instead of logging manually, we can use _Autologging_ feature provided by MLFlow.
 
 Global autologging:
 
@@ -171,7 +171,7 @@ rf.fit(X_train, y_train)
 
 The autologger then not only stores the model parameters for ease of use, it also stores other files inside the `model` (can be specified) folder inside our experiment artifact folder, these files include:
 
-- `conda.yaml` and `requirements.txt`: Files which define the current envrionment for use with either `conda` or `pip` respectively
+- `conda.yaml` and `requirements.txt`: Files which define the current environment for use with either `conda` or `pip` respectively
 - `MLmodel` an internal MLflow file for organization
 - Other framework-specific files such as the model itself
 
@@ -181,7 +181,7 @@ The autologger then not only stores the model parameters for ease of use, it als
 mlflow.<framework>.log_model(model, artifact_path="models_mlflow")
 ```
 
-where we replace the `<framework>` wih our model's framework (ex: `sklearn`, `xgboost`...etc). The `artifact_path` defines where in the `artifact_uri` the model is stored.
+where we replace the `<framework>` with our model's framework (ex: `sklearn`, `xgboost`...etc). The `artifact_path` defines where in the `artifact_uri` the model is stored.
 
 ### Saving Artifacts
 
@@ -263,10 +263,9 @@ Just as MLFlow helps us store, compare and deal with ML experiment runs. It also
 
 ## Assigning labels in the model registry
 
-We can assign `labels` to our model versions  in the model registry based on there status. In the old UI, this can be done by assign a `Stage` to the model such as “Staging”, “Production”, or “None”.
+We can assign `labels` to our model versions in the model registry based on there status. In the old UI, this can be done by assign a `Stage` to the model such as “Staging”, “Production”, or “None”.
 
 ![mlflow staging UI](../assets/mlflow-staging.png)
-
 
 However, in the new UI this has been changed to `tags` and `aliases` instead.
 

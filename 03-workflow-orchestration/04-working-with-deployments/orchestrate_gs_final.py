@@ -1,34 +1,35 @@
 import pathlib
 import pickle
-import pandas as pd
+from datetime import date
+
+import mlflow
 import numpy as np
+import pandas as pd
 import scipy
 import sklearn
-from sklearn.feature_extraction import DictVectorizer
-from sklearn.metrics import mean_squared_error
-import mlflow
 import xgboost as xgb
 from prefect import flow, task
-from prefect_gcp import GcsBucket
 from prefect.artifacts import create_markdown_artifact
-from datetime import date
+from prefect_gcp import GcsBucket
+from sklearn.feature_extraction import DictVectorizer
+from sklearn.metrics import mean_squared_error
 
 
 @task(retries=3, retry_delay_seconds=2)
 def read_dataframe(filename):
-    """Read data into DataFrame"""
+    """Read data into DataFrame."""
     df = pd.read_parquet(filename)
 
     # Calculate duration
-    df['duration'] = df.lpep_dropoff_datetime - df.lpep_pickup_datetime
+    df["duration"] = df.lpep_dropoff_datetime - df.lpep_pickup_datetime
     df.duration = df.duration.apply(lambda td: td.total_seconds() / 60)
 
     # Filter between 1 min and 60 mins
     df = df[(df.duration >= 1) & (df.duration <= 60)]
 
-    categorical = ['PULocationID', 'DOLocationID']    
+    categorical = ["PULocationID", "DOLocationID"]
     df[categorical] = df[categorical].astype(str)
-    
+
     return df
 
 
@@ -44,7 +45,7 @@ def add_features(
         sklearn.feature_extraction.DictVectorizer,
     ]
 ):
-    """Add features to the model"""
+    """Add features to the model."""
     df_train["PU_DO"] = df_train["PULocationID"] + "_" + df_train["DOLocationID"]
     df_val["PU_DO"] = df_val["PULocationID"] + "_" + df_val["DOLocationID"]
 
@@ -72,7 +73,7 @@ def train_best_model(
     y_val: np.ndarray,
     dv: sklearn.feature_extraction.DictVectorizer,
 ) -> None:
-    """Train a model with best hyperparams and write everything out"""
+    """Train a model with best hyperparams and write everything out."""
 
     with mlflow.start_run():
         train = xgb.DMatrix(X_train, label=y_train)
@@ -114,7 +115,7 @@ def train_best_model(
 
         ## Summary
 
-        Duration Prediction 
+        Duration Prediction
 
         ## RMSE XGBoost Model
 
@@ -123,20 +124,18 @@ def train_best_model(
         | {date.today()} | {rmse:.2f} |
         """
 
-        create_markdown_artifact(
-            key="duration-model-report", markdown=markdown__rmse_report
-        )
-        
+        create_markdown_artifact(key="duration-model-report", markdown=markdown__rmse_report)
+
     return None
 
 
 @flow
 def main_flow_gcs(
-    train_path: str = "../../data/green_tripdata_2021-01.parquet", 
-    val_path: str = "../../data/green_tripdata_2021-02.parquet" 
+    train_path: str = "../../data/green_tripdata_2021-01.parquet",
+    val_path: str = "../../data/green_tripdata_2021-02.parquet",
 ) -> None:
-    """The main training pipeline"""
-    
+    """The main training pipeline."""
+
     # Mlflow settings
     mlflow.set_tracking_uri("sqlite:///mlflow.db")
     mlflow.set_experiment("nyc-taxi-experiment")
@@ -149,9 +148,10 @@ def main_flow_gcs(
 
     # Transform
     X_train, X_val, y_train, y_val, dv = add_features(df_train, df_val)
-    
+
     # Train
     train_best_model(X_train, X_val, y_train, y_val, dv)
+
 
 if __name__ == "__main__":
     main_flow_gcs()

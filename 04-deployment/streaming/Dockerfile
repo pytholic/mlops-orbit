@@ -10,4 +10,4 @@ RUN pip install -r requirements.txt
 
 ENV GOOGLE_APPLICATION_CREDENTIALS="./service_account_key.json"
 
-CMD [ "python", "cloud_function.py" ] 
+CMD [ "python", "cloud_function.py" ]

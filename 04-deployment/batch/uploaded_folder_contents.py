@@ -1,10 +1,9 @@
 def upload_directory_with_transfer_manager(bucket_name, source_directory, workers=8):
     """Upload every file in a directory, including all files in subdirectories.
 
-    Each blob name is derived from the filename, not including the `directory`
-    parameter itself. For complete control of the blob name for each file (and
-    other aspects of individual blob metadata), use
-    transfer_manager.upload_many() instead.
+    Each blob name is derived from the filename, not including the `directory` parameter itself.
+    For complete control of the blob name for each file (and other aspects of individual blob
+    metadata), use transfer_manager.upload_many() instead.
     """
 
     # The ID of your GCS bucket
@@ -24,6 +23,7 @@ def upload_directory_with_transfer_manager(bucket_name, source_directory, worker
 
     import os
     from pathlib import Path
+
     from google.cloud.storage import Client, transfer_manager
 
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/pytholic/service_account_key.json"
@@ -48,11 +48,15 @@ def upload_directory_with_transfer_manager(bucket_name, source_directory, worker
     # Finally, convert them all to strings.
     string_paths = [str(path) for path in relative_paths]
 
-    print("Found {} files.".format(len(string_paths)))
+    print(f"Found {len(string_paths)} files.")
 
     # Start the upload.
     results = transfer_manager.upload_many_from_filenames(
-        bucket, string_paths, source_directory=source_directory, max_workers=workers, blob_name_prefix="data/"
+        bucket,
+        string_paths,
+        source_directory=source_directory,
+        max_workers=workers,
+        blob_name_prefix="data/",
     )
 
     for name, result in zip(string_paths, results):
@@ -60,9 +64,12 @@ def upload_directory_with_transfer_manager(bucket_name, source_directory, worker
         # the input list, in order.
 
         if isinstance(result, Exception):
-            print("Failed to upload {} due to exception: {}".format(name, result))
+            print(f"Failed to upload {name} due to exception: {result}")
         else:
-            print("Uploaded {} to {}.".format(name, bucket.name))
+            print(f"Uploaded {name} to {bucket.name}.")
 
-if __name__=="__main__":
-    upload_directory_with_transfer_manager(bucket_name="taxi-ride-prediction", source_directory="../../data")
+
+if __name__ == "__main__":
+    upload_directory_with_transfer_manager(
+        bucket_name="taxi-ride-prediction", source_directory="../../data"
+    )

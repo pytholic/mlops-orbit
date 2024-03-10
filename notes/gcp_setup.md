@@ -36,7 +36,7 @@ cat ~/.ssh/mlops-zoomcamp.pub
 
 On GCP console, enter the copied public key
 
-Compute Engine*> Metadata > SSH Key*
+Compute Engine\*> Metadata > SSH Key\*
 
 ## Step 5: SSH into instance
 
@@ -118,10 +118,10 @@ docker run hello-world
 
 ## Step 8: Connect Jupyter Notebook
 
-- Run notebook in remote terminal jupyter notebook 
+- Run notebook in remote terminal jupyter notebook
 - Use port forwarding
 - In VS Code
-    - Go to `ports` tab and forward `8888`
+  - Go to `ports` tab and forward `8888`
 
 ![port forwarding image](../assets/port1.png)
 

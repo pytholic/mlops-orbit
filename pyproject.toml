@@ -1,0 +1,14 @@
+[tool.isort]
+line_length = 99
+profile = "black"
+filter_files = true
+force_grid_wrap = 3
+include_trailing_comma = true
+
+[tool.flake8]
+max_line_length = 99
+show_source = true
+format = "pylint"
+ignore = ["W503"]
+extend_ignore = ["E203"]
+exclude = [".git", "__pycache__"]

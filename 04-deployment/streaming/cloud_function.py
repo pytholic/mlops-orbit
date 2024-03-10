@@ -1,6 +1,7 @@
-import os
 import base64
 import json
+import os
+
 import functions_framework
 import mlflow
 from google.cloud import pubsub_v1
@@ -18,15 +19,18 @@ RUN_ID = "553def03f5224f649fe56bc1567daccc"
 logged_model = f"gs://pytholic-mlops-zoomcamp-artifacts/{EXPERIMENT_ID}/{RUN_ID}/artifacts/model"
 model = mlflow.pyfunc.load_model(logged_model)
 
+
 def prepare_features(ride):
     features = {}
-    features["PU_DO"] = "%s_%s" % (ride["PULocationID"], ride["DOLocationID"])
+    features["PU_DO"] = "{}_{}".format(ride["PULocationID"], ride["DOLocationID"])
     features["trip_distance"] = ride["trip_distance"]
     return features
+
 
 def predict(features):
     pred = model.predict(features)
     return pred[0]
+
 
 def publish_to_topic(project_id, topic_name, message_json):
     # Encode the message json
@@ -35,6 +39,7 @@ def publish_to_topic(project_id, topic_name, message_json):
     future = publisher.publish(topic_path, data=message_encoded)
     # Verify that the message has arrived
     print(future.result())
+
 
 @functions_framework.cloud_event
 def predict_duration(cloud_event):
@@ -45,13 +50,10 @@ def predict_duration(cloud_event):
     features = prepare_features(ride)
     predicted_duration = round(predict(features))
     prediction = {
-        'model': "ride_duration_prediction_model",
-        'version': 123,
-        'prediction': {
-            'ride_duration': predicted_duration, 
-            "ride_id": ride_id
-        }
-      }
+        "model": "ride_duration_prediction_model",
+        "version": 123,
+        "prediction": {"ride_duration": predicted_duration, "ride_id": ride_id},
+    }
 
     # Publish the result to another Pub/Sub topic
     publish_to_topic(PROJECT_ID, TOPIC_NAME, prediction)

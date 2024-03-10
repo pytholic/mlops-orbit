@@ -1,14 +1,16 @@
 # MLOps Pipeline
+
 ![Machine Learning Lifecycle](assets/mlops.png)
 This repository is my official beginning of MLOps journey. Instead of focusing on piece of production-grade machine learning, we will be building full end-to-end pipeline.
 
 We will be training simple regression models on NYC taxi ride dataset and build MLOps pipeline including model training, hyperparameter optimization, experiment tracking, orchestrating, deployment, monitoring, etc. This repository is inspired by the `mlops-zoomcamp` course by DataTalks.Club.
 
-*Since the MLOps tool landscape is very wide, There will be more follow up work on this with various tech stacks.*
+_Since the MLOps tool landscape is very wide, There will be more follow up work on this with various tech stacks._
 
 # Tech Stack
 
 # Notes
+
 [Setting up a VM on GCP](notes/gcp_setup.md)<br>
 [Dataset](notes/dataset.md)<br>
 [MLFlow Experiment Tracking](notes/mlflow.md)<br>
@@ -16,9 +18,9 @@ We will be training simple regression models on NYC taxi ride dataset and build 
 [Workflow Orchestration with Prefect](notes/orchestration.md)<br>
 [Model Deployment as a web-service with Docker, Kubernetes, and GKS.](notes/web_service_deployment.md)<br>
 [Model Deployment with model from model registry](04-deployment/web-service-mlflow/README.md)<br>
-[Streaming Model Deployment (Online)](04-deployment/streaming/README.md)
-[Batch Model Deployment (Offline)](04-deployment/batch/README.md)
-[Scheduling batch scoring jobs with Prefect](04-deployment/batch/README.md#scheduling-batch-scoring-jobs-with-prefect)
+[Streaming Model Deployment (Online)](04-deployment/streaming/README.md)<br>
+[Batch Model Deployment (Offline)](04-deployment/batch/README.md)<br>
+[Scheduling batch scoring jobs with Prefect](04-deployment/batch/README.md#scheduling-batch-scoring-jobs-with-prefect)<br>
 
 # Setup
 
@@ -32,17 +34,20 @@ conda activate mlops-orbit
 ```
 
 Install `pip-tools`.
+
 ```
 pip install pip-tools
 ```
 
 Run
+
 ```
 pip-compile
 pip-sync
 ```
 
 ## For remote VM
+
 Forward MLflow port which is `0.0.0.0:5000`.
 ![mlflow port forwarding](assets/port2.png)
 
@@ -52,6 +57,7 @@ Forward the port for `jupyter` if you are using it (`127.0.0.1:8888`).
 Forward port for Prefect server (`127.0.0.1:4200`).
 
 You can also do it in `~/.ssh/config`.
+
 ```
 Host gcp-mlflow-tracking-server
     HostName xx.xx.xx.xxx # VM Public IP
