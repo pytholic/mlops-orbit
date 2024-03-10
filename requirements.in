@@ -1,0 +1,13 @@
+mlflow
+jupyter
+scikit-learn
+pandas
+seaborn
+hyperopt
+xgboost
+prefect
+prefect-gcp
+flask
+requests
+gunicorn
+pip-tools
