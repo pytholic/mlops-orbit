@@ -30,27 +30,15 @@ Create environment
 conda create -n exp-tracking python=3.9
 ```
 
-Create `requirements.txt`
-
+Install `pip-tools`.
 ```
-mlflow
-jupyter
-scikit-learn
-pandas
-seaborn
-hyperopt
-xgboost
-prefect
-prefect-gcp
-flask
-requests
-gunicorn
-pip-tools
+pip install pip-tools
 ```
 
-Install requirements
+Run
 ```
-pip install -r requirements.txt
+pip-compile
+pip-sync
 ```
 
 ## For remote VM
