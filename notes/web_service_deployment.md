@@ -2,7 +2,7 @@
 
 After designing and orchestrating our pipeline, we can deploy our model. When it comes to model deployment, there are multiple options depending on how often we require predictions.
 
-`Batch/Offline Deployment` - In batch deployment, the model is up and running all the time. We just apply our model to new data regularly.<br>
+`Batch/Offline Deployment` - In batch deployment, we just apply our model to new data regularly.<br>
 `Online Deployment` - When we need model up and running all the time i.e. We need predictions as soon as possible.
 
 ![Deployment Methods](../assets/deployment-methods.png)
