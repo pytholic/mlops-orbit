@@ -68,14 +68,14 @@ We will use PostgreSQL database as the backend store.
 
 - Go to GCP dashboard > search for SQL > select `create instance` > select `PostgreSQL`.
 - Put a name and password for the instance. Select the Database version and region. You can choose one option for Zonal availability too.
-- Expand the `Customize your instance` section, and in connections, select  **Private IP**  and deselect **Public IP**. Then from the drop-down options for `Network` in  **Private IP** part, select `default`. This is the VPC which our virtual machine should be also on it too. So the VM and DB can see each other.
+- Expand the `Customize your instance` section, and in connections, select  `Private IP`  and deselect `Public IP`. Then from the drop-down options for `Network` in  **Private IP** part, select `default`. This is the VPC which our virtual machine should be also on it too. So the VM and DB can see each other.
 - Select `Create Instance` option.
 
 It will take you to the overview page and will take some time to create the database instance. Then we can create a database. GCP will create a default one named Postgres, but we can create a new one.
 
 Next go to the `Databases` section and select `Create Database`. Gie it a name such as `mlflow_db`.
 
-We also need to create a user. Go to the `User` section and click on the `Add User Account`. Select a ``` username`` and a  ```password\`.
+We also need to create a user. Go to the `User` section and click on the `Add User Account`. Select a `username` and a  `password`.
 
 ## Adding VM to hosts
 
