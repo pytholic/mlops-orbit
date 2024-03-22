@@ -15,7 +15,7 @@ push:
 # pull section allows you to provide instructions for cloning this project in remote locations
 pull:
   - prefect.deployments.steps.set_working_directory:
-      directory: /Users/pytholic/Developer/personal/Projects/mlops/mlops-orbit/04-deployment/batch
+      directory: /Users/lunit_haseebraja/Developer/personal/mlops/mlops-orbit/04-deployment/batch
 
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
@@ -36,6 +36,27 @@ deployments:
     tags: []
     description:
     entrypoint: score_scheduled:ride_duration_prediction
+    parameters:
+      {
+        "taxi_type": "green",
+        "run_id": "553def03f5224f649fe56bc1567daccc",
+        "experiment_id": "1",
+        "run_date": "2021-02-01",
+      }
+    work_pool:
+      name: local-work
+      work_queue_name:
+      job_variables: {}
+    schedules:
+      - interval: 60.0
+        anchor_date: "2024-03-22T13:40:07.833299+00:00"
+        timezone: UTC
+        active: true
+  - name: backfill-deployment
+    version:
+    tags: []
+    description:
+    entrypoint: score_backfill.py:ride_duration_prediction_backfill
     parameters: {}
     work_pool:
       name: local-work

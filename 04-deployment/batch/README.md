@@ -66,6 +66,7 @@ Switching back to local `prefect` host (if you logged in to prefect cloud).
 
 ```
 prefect config set PREFECT_API_URL="http://127.0.0.1:4200/api"
+prefect server start
 ```
 
 Run the file.
@@ -118,4 +119,42 @@ Now go to `Deployments` in the UI, and run the deployment. Alternative, open a n
 # Example command
 
 prefect deployment run 'ride-duration-prediction/my-first-deployment' --param taxi_type=green --param run_id=553def03f5224f649fe56bc1567daccc --param experiment_id=1 --param run_date=2021-02-01
+```
+
+## Backfill deployment
+
+We can run sub-flows for multiple months. Refer to the script `score_backfill.py`.
+
+```
+prefect deploy score_backfill.py:ride_duration_prediction_backfill -n backfill-deployment -p local-work
+prefect worker start -t process -p local-work
+prefect deployment run 'ride-duration-prediction-backfill/backfill-deployment'
+```
+
+## Adding schedule
+
+We can add schedule from from UI inside **Deployments**, or we can use `prefect.yaml` file. We also need to pass the required `parameters`.
+
+```yaml
+- name: my-first-deployment
+  version:
+  tags: []
+  description:
+  entrypoint: score_scheduled:ride_duration_prediction
+  parameters:
+    {
+      "taxi_type": "green",
+      "run_id": "553def03f5224f649fe56bc1567daccc",
+      "experiment_id": "1",
+      "run_date": "2021-02-01",
+    }
+  work_pool:
+    name: local-work
+    work_queue_name:
+    job_variables: {}
+  schedules:
+    - interval: 60.0
+      anchor_date: "2024-03-22T13:40:07.833299+00:00"
+      timezone: UTC
+      active: true
 ```

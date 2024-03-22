@@ -91,9 +91,11 @@ def get_paths(run_date, taxi_type, run_id):
     year = prev_month.year
     month = prev_month.month
 
-    input_file = (
-        f"gs://taxi-ride-prediction/data/{taxi_type}_tripdata_{year:04d}-{month:02d}.parquet"
-    )
+    input_file = f"https://d37ci6vzurychx.cloudfront.net/trip-data/{taxi_type}_tripdata_{year:04d}-{month:02d}.parquet"
+
+    # input_file = (
+    #     f"gs://taxi-ride-prediction/data/{taxi_type}_tripdata_{year:04d}-{month:02d}.parquet"
+    # )
     output_file = f"gs://taxi-ride-prediction/output/taxi_type={taxi_type}/year={year:04d}/month={month:02d}/{run_id}.parquet"
 
     return input_file, output_file
