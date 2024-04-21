@@ -31,3 +31,25 @@ Our monitoring scheme will be as follows:
 - Prefect to implement monitoring jobs
 - Evidently library as the evaluation layer to calculate some metrics and store in PostgreSQL
 - A metrics dashboard with Grafana based on SQL data
+
+# Set up the environment and creating services
+
+Install the following requirements:
+
+```
+pip install evidently psycopg psycopg_binary
+```
+
+Next, we will use `docker-compose.yml` to create the required services:
+
+- PostgreSQL
+- Adminer (web-based database management tool)
+- Grafana
+
+Build the services:
+
+```
+docker compose up --build
+```
+
+Test if services are up and running. Head over to `localhost:8080` to check Grafana and `localhost:3000` to check Aminer.
