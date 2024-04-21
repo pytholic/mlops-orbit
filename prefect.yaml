@@ -14,20 +14,20 @@ push: null
 
 # pull section allows you to provide instructions for cloning this project in remote locations
 pull:
-- prefect.deployments.steps.set_working_directory:
+  - prefect.deployments.steps.set_working_directory:
     directory: /Users/lunit_haseebraja/Developer/personal/mlops/mlops-orbit
 
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
-- name: null
-  version: null
-  tags: []
-  description: null
-  schedule: {}
-  flow_name: null
-  entrypoint: null
-  parameters: {}
-  work_pool:
-    name: null
-    work_queue_name: null
-    job_variables: {}
+  - name: null
+    version: null
+    tags: []
+    description: null
+    schedule: {}
+    flow_name: null
+    entrypoint: null
+    parameters: {}
+    work_pool:
+      name: null
+      work_queue_name: null
+      job_variables: {}
