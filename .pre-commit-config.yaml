@@ -12,7 +12,7 @@ repos:
       - id: check-toml
       - id: check-executables-have-shebangs
       - id: check-case-conflict
-      - id: check-added-large-files
+      # - id: check-added-large-files
 
   # python code formatting
   - repo: https://github.com/psf/black

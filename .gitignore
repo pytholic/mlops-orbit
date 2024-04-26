@@ -8,6 +8,7 @@ mlflow.db
 service_account_key.json
 .DS_Store
 .env
+.jypyter/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
