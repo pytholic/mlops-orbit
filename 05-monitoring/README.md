@@ -86,7 +86,7 @@ dummy_metrics_calculation.py
 
 Head over to the browser and open `localhost:8080` where our adminer service is running. Enter username and password. In my case it is username is "postgres" and password is "example". We can see data being written into our table.
 
-![alt text](../assets/monitoring_adminer_table.png)
+![Adminer db table](../assets/monitoring_adminer_table.png)
 
 Now open Grafana by going to `localhost:3000`. Enter username "admin" and password "admin". Go to `Dashboards -> New Dashboard -> Add Visualization`. Select correct data source.
 
@@ -95,11 +95,11 @@ Now open Grafana by going to `localhost:3000`. Enter username "admin" and passwo
 
 After that build query, select a value. Add another value for `timestamp` or else it will say time not found. then your dashboard should look like:
 
-![alt text](../assets/monitoring_grafana_dummy.png)
+![Grafana dummy visualization](../assets/monitoring_grafana_dummy.png)
 
 Click `Apply` and save the dashboard. We can visualize more values by adding additional visualization in our dashboard.
 
-![alt text](../assets/monitoring_grafana_dummy_2.png)
+![Grafana dashboard](../assets/monitoring_grafana_dummy_2.png)
 
 # Working with actual values
 
@@ -109,7 +109,7 @@ In order to simulate production usage, we will read our data day by day. We will
 
 We can also convert our script into a Prefect pipeline. After that head over to Grafana and create dashboard same as before.
 
-![alt text](../assets/monitoring_grafana_metrics.png)
+![Monitoring metrics with Grafana](../assets/monitoring_grafana_metrics.png)
 
 # Save Grafana Dashboard
 
@@ -119,4 +119,18 @@ Create a file `05-Monitoring/config/grafana_dasboards.yaml`. In this config file
 
 Now we need to write data to our `data_drift.json`. Go to Grafana dashboard, settings, JSON model and copy it. Paste it inside `data_drift.json`.
 
-Now if we stop and run our containers again, we should see same dashboard. Note that it only persists the panels/layout and not the actual data values. Run the script again to send some values to the dashboard.
+Now if we stop and run our containers again, we should see same dashboard. This will persist our panels/layout and graphs. You can run the script again to send some values to the dashboard.
+
+# Debugging with test suits and report
+
+We can assume a threshold for each metric, and if the values go beyond the threshold, we can try to debug what went wrong using our logs. Here we will make use of evidently presets for metrics and tests. Check the [link](https://docs.evidentlyai.com/presets/all-presets) for more information.
+
+Code can be found at `05-Monitoring/debugging_nyc_taxi_data.ipynb`. We will use the `html` format to quickly the analyze the drift test results in our notebook.
+
+We can then check column drifts.
+![Drift tests](../assets/monitoring_drift_test.png)
+
+> \[!TIP\] > _This is pretty use full since we do not need to implement any test ourselves. We just import test from evidently and visualize results._
+
+Then we can use report for analysis and debug what is going on in our data. Reports usually contain more information.
+![Drift report](../assets/monitoring_drift_report.png)
