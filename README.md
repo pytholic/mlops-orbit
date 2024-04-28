@@ -26,24 +26,11 @@ _Since the MLOps tool landscape is very wide, There will be more follow up work 
 
 ## Install requirements
 
-Create environment
-
 ```
 conda create -n mlops-orbit python=3.9
 conda activate mlops-orbit
-```
 
-Install `pip-tools`.
-
-```
-pip install pip-tools
-```
-
-Run
-
-```
-pip-compile
-pip-sync
+pip install -r requirements.txt
 ```
 
 ## For remote VM
