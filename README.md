@@ -21,6 +21,7 @@ _Since the MLOps tool landscape is very wide, There will be more follow up work 
 [Streaming Model Deployment (Online)](04-deployment/streaming/README.md)<br>
 [Batch Model Deployment (Offline)](04-deployment/batch/README.md)<br>
 [Scheduling batch scoring jobs with Prefect](04-deployment/batch/README.md#scheduling-batch-scoring-jobs-with-prefect)<br>
+[Monitoring and debugging with Evidently](05-monitoring/README.md)<br>
 
 # Setup
 
